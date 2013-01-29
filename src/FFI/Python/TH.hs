@@ -5,13 +5,21 @@ import Language.Haskell.TH
 import Debug.Trace
 
 
-parameters :: Type -> [Name]
+parameters :: Type -> [Type]  -- Result list are "ground" types
 parameters t = case t of
   AppT t1 t2 -> parameters t1 ++ parameters t2
   ArrowT     -> []
-  ConT name  -> [name]
+  ConT name  -> [ConT name]
   -- TODO handle ListT, TupleT and so on
   _          -> error $ "parameters: unhandled Type " ++ show t
+
+
+-- TODO better use custom data type, tuples are quite finite
+argTypesToTuple :: [Type] -> Type
+argTypesToTuple types = foldl f (TupleT n) types
+  where
+    f a next = AppT a next
+    n = length types
 
 
 debug x = trace ("\n" ++ show x ++ "\n") $ return ()
@@ -32,12 +40,9 @@ deriveCallable funName exportedName = do
                      (AppT
                        (AppT
                          ArrowT
-                         (AppT
-                           (AppT (TupleT 2) (ConT (mkName "Int")))
-                           (ConT (mkName "Double"))
-                         )
+                         (argTypesToTuple paramTypes)
                        )
-                       (ConT (mkName "String"))
+                       returnType
                      )
                  ]
 
