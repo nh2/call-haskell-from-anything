@@ -1,5 +1,6 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE DataKinds, GADTs, TypeOperators #-}
 
 module FFI.Python where
 
@@ -8,11 +9,35 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import           Data.Monoid
 import qualified Data.MessagePack as MSG
+import           Blaze.ByteString.Builder
+import           Data.Int
 
 import Foreign.C
 
 import FFI.Python.TH (deriveCallable)
+import FFI.Python.Copied
 
+infixr :::
+data ParamList l where
+  Nil :: ParamList '[]
+  (:::) :: (MSG.Packable a) => a -> ParamList l -> ParamList (a ': l)
+
+paramLength :: ParamList l -> Int
+paramLength Nil = 0
+paramLength (_ ::: ls) = 1 + paramLength ls
+
+pack :: ParamList l -> Builder
+pack Nil = mempty
+pack (a ::: as) = MSG.from a <> pack as
+
+instance MSG.Packable (ParamList l) where
+  from ls = fromArray (const $ paramLength ls) pack ls
+
+x :: ParamList '[String, String]
+x = "a" ::: "b" ::: Nil
+
+
+-- unpack ::
 
 -- | Example function to be called from Python.
 f1 :: Int -> Double -> String

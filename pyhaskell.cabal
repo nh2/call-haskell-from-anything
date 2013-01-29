@@ -25,10 +25,12 @@ library
     src
   exposed-modules:
       FFI.Python.TH
+    , FFI.Python.Copied
   build-depends:
       base >= 4 && < 5
     , bytestring >= 0.9.2.1
     , msgpack >= 0.7.1.5
+    , blaze-builder >= 0.3.1.0
     , template-haskell
   ghc-options:
     -Wall -fwarn-unused-imports
@@ -45,6 +47,7 @@ executable pyhaskell.so
     , pyhaskell
     , bytestring >= 0.9.2.1
     , msgpack >= 0.7.1.5
+    , blaze-builder >= 0.3.1.0
     , template-haskell
   ghc-options:
   -- For building TemplateHaskell with cabal and -dynamic, we have to disable -dynamic sometimes
