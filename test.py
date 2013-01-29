@@ -14,6 +14,6 @@ msg = msgpack.packb([1, 2.23])
 resmsg = fun(msg)
 res = msgpack.unpackb(resmsg)
 
-print res
+print "Haskell said:", res
 
 lib.hs_exit()
