@@ -14,8 +14,11 @@ parameters t = case t of
   _          -> error $ "parameters: unhandled Type " ++ show t
 
 
-deriveCallable :: Name -> Q [Dec]
-deriveCallable funName = do
+debug x = trace ("\n" ++ show x ++ "\n") $ return ()
+
+
+deriveCallable :: Name -> String -> Q [Dec]
+deriveCallable funName exportedName = do
   info <- reify funName
   case info of
     VarI name typ mDec fixity -> do
@@ -24,22 +27,24 @@ deriveCallable funName = do
           paramTypes    = init signatureList
           returnType    = last signatureList
 
-          name' = mkName (nameString ++ "_hs")
-
-      trace (show signatureList) $ return ()
-      return $ [ SigD
-                   name'
-                   (AppT
+          typ' = [ SigD
+                     (mkName exportedName)
                      (AppT
-                       ArrowT
                        (AppT
-                         (AppT (TupleT 2) (ConT (mkName "Int")))
-                         (ConT (mkName "Double"))
+                         ArrowT
+                         (AppT
+                           (AppT (TupleT 2) (ConT (mkName "Int")))
+                           (ConT (mkName "Double"))
+                         )
                        )
+                       (ConT (mkName "String"))
                      )
-                     (ConT (mkName "String"))
-                   )
-               ]
+                 ]
+
+      debug typ'
+      debug $ pprint typ'
+      return []
+
     x -> error "deriveCallable: can only derive functions"
 
 

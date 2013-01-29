@@ -36,4 +36,4 @@ f1_hs cs = do
     res_cs <- BS.useAsCString res_bs return
     return res_cs
 
-$(deriveCallable 'f1)
+$(deriveCallable 'f1 "f1_hs")
