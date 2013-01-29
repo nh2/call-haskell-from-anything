@@ -1,0 +1,32 @@
+name:          pyhaskell
+version:       0.1
+license:       MIT
+author:        Niklas Hambüchen (mail@nh2.me)
+maintainer:    Niklas Hambüchen (mail@nh2.me)
+category:      Network
+build-type:    Simple
+License:       MIT
+synopsis:      Python-to-Haskell function calls
+stability:     experimental
+tested-With:   GHC==7.4.2
+cabal-version: >= 1.10
+homepage:      https://github.com/nh2/pyhaskell
+bug-Reports:   https://github.com/nh2/pyhaskell/issues
+
+
+source-repository head
+  type: git
+  location: git://github.com/nh2/pyhaskell.git
+
+
+library
+  default-language: Haskell2010
+  hs-source-dirs:
+    src
+  exposed-modules:
+      FFI.Python
+  build-depends:
+      base >= 4 && < 5
+    , bytestring >= 0.9.2.1
+  ghc-options:
+    -Wall -fwarn-unused-imports
