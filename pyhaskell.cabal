@@ -25,6 +25,7 @@ library
     src
   exposed-modules:
       FFI.Python.TH
+    , FFI.Python.MsgPackParamList
     , FFI.Python.Copied
   build-depends:
       base >= 4 && < 5
@@ -32,6 +33,8 @@ library
     , msgpack >= 0.7.1.5
     , blaze-builder >= 0.3.1.0
     , template-haskell
+    , mtl >= 2.1.2
+    , attoparsec >= 0.10.3.0
   ghc-options:
     -Wall -fwarn-unused-imports
 
@@ -49,6 +52,8 @@ executable pyhaskell.so
     , msgpack >= 0.7.1.5
     , blaze-builder >= 0.3.1.0
     , template-haskell
+    , mtl >= 2.1.2
+    , attoparsec >= 0.10.3.0
   ghc-options:
   -- For building TemplateHaskell with cabal and -dynamic, we have to disable -dynamic sometimes
   --  -no-hs-main -fPIC -shared -dynamic

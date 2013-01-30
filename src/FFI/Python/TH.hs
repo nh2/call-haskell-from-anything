@@ -1,8 +1,13 @@
 module FFI.Python.TH where
 
 import Language.Haskell.TH
+import qualified Data.MessagePack as MSG
+
+import FFI.Python.MsgPackParamList
 
 import Debug.Trace
+
+
 
 
 parameters :: Type -> [Type]  -- Result list are "ground" types
