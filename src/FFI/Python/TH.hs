@@ -1,9 +1,6 @@
 module FFI.Python.TH where
 
 import Language.Haskell.TH
-import qualified Data.MessagePack as MSG
-
-import FFI.Python.MsgPackParamList
 
 import Debug.Trace
 
@@ -27,6 +24,7 @@ argTypesToTuple types = foldl f (TupleT n) types
     n = length types
 
 
+debug :: (Show a, Monad m) => a -> m ()
 debug x = trace ("\n" ++ show x ++ "\n") $ return ()
 
 
@@ -34,8 +32,8 @@ deriveCallable :: Name -> String -> Q [Dec]
 deriveCallable funName exportedName = do
   info <- reify funName
   case info of
-    VarI name typ mDec fixity -> do
-      let nameString    = nameBase name
+    VarI name typ _mDec _fixity -> do
+      let _nameString   = nameBase name
           signatureList = parameters typ
           paramTypes    = init signatureList
           returnType    = last signatureList
@@ -55,7 +53,7 @@ deriveCallable funName exportedName = do
       debug $ pprint typ'
       return []
 
-    x -> error "deriveCallable: can only derive functions"
+    _ -> error "deriveCallable: can only derive functions"
 
 
 -- Example:

@@ -6,7 +6,8 @@ lib = cdll.LoadLibrary("dist/build/pyhaskell.so/pyhaskell.so")
 lib.hs_init(0, 0)
 
 # Set function return type to string
-fun = lib.f1_hs
+# fun = lib.f1_hs
+fun = lib.f1_t_export
 fun.restype = c_char_p
 
 # Call function
@@ -15,5 +16,22 @@ resmsg = fun(msg)
 res = msgpack.unpackb(resmsg)
 
 print "Haskell said:", res
+
+
+# Some shortcuts
+def make_msgpack_fun(fun):
+    fun.restype = c_char_p
+
+    def f(*args):
+        return msgpack.unpackb(fun(msgpack.packb(args)))
+
+    return f
+
+
+# Now this is the only thing required
+fib = make_msgpack_fun(lib.fib_export)
+
+print "Haskell fib:", fib(13)
+
 
 lib.hs_exit()
