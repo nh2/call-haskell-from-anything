@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, TypeOperators, FunctionalDependencies, FlexibleInstances, TypeFamilies, PolyKinds, ScopedTypeVariables, FlexibleContexts, EmptyDataDecls #-}
+{-# LANGUAGE GADTs, TypeOperators, MultiParamTypeClasses, FlexibleInstances, TypeFamilies, PolyKinds, ScopedTypeVariables, FlexibleContexts #-}
 
 module FFI.Python.TypeUncurryLegacy where
 
@@ -19,71 +19,68 @@ import FFI.Python.Util
 data Proxy k = Proxy
 
 
-data LNil -- '[]
-data a :~ b -- ':
+data Nil -- '[]
+data a ::: b -- ':
 
 
-data PList l where
-  LNil :: PList LNil
-  (:~) :: a -> PList l -> PList (a :~ l)
+data TypeList l where
+  Nil :: TypeList Nil
+  (:::) :: a -> TypeList l -> TypeList (a ::: l)
 
 
-infixr :~
+infixr :::
 
 
-class ParamLengthOld l where
-  paramLengthOld :: Proxy l -> Int
+class ParamLength l where
+  paramLength :: Proxy l -> Int
 
-instance ParamLengthOld LNil where
-  paramLengthOld _ = 0
+instance ParamLength Nil where
+  paramLength _ = 0
 
-instance (ParamLengthOld l) => ParamLengthOld (a :~ l) where
-  paramLengthOld _ = succ $ paramLengthOld (undefined :: Proxy l)
-
-
-
-type family Param2 f
-type instance Param2 (Identity r) = LNil
-type instance Param2 (a -> f) = a :~ Param2 f
-
-type family Result2 f
-type instance Result2 (Identity r) = r
-type instance Result2 (a -> f) = Result2 f
-
-
-class (Param2 f ~ l, Result2 f ~ r) => ToParamList2 f l r where
-  translate2 :: f -> PList l -> r
-
-instance (ToParamList2 f l r) => ToParamList2 (a -> f) (a :~ l) r where
-  translate2 f (a :~ l) = translate2 (f a) l
-
-instance ToParamList2 (Identity r) LNil r where
-  translate2 (Identity r) LNil = r
+instance (ParamLength l) => ParamLength (a ::: l) where
+  paramLength _ = succ $ paramLength (undefined :: Proxy l)
 
 
 
-instance (Unpackable2 l, ParamLengthOld l) => MSG.Unpackable (PList l) where
+type family Param f
+type instance Param (Identity r) = Nil
+type instance Param (a -> f) = a ::: Param f
+
+type family Result f
+type instance Result (Identity r) = r
+type instance Result (a -> f) = Result f
+
+
+class (Param f ~ l, Result f ~ r) => ToTypeList f l r where
+  translate :: f -> TypeList l -> r
+
+instance (ToTypeList f l r) => ToTypeList (a -> f) (a ::: l) r where
+  translate f (a ::: l) = translate (f a) l
+
+instance ToTypeList (Identity r) Nil r where
+  translate (Identity r) Nil = r
+
+
+
+class UnpackableRec l where
+  getRec :: A.Parser (TypeList l)
+
+instance UnpackableRec Nil where
+  getRec = return Nil
+
+instance (MSG.Unpackable a, UnpackableRec l) => UnpackableRec (a ::: l) where
+  getRec = (:::) <$> MSG.get <*> getRec
+
+
+instance (UnpackableRec l, ParamLength l) => MSG.Unpackable (TypeList l) where
   get = parseArray f
     where
-      len = paramLengthOld (undefined :: Proxy l)
-      f n | n == len = get2
+      len = paramLength (undefined :: Proxy l)
+      f n | n == len = getRec
           -- TODO also print function name
           | otherwise = fail $ printf "wrong number of function arguments: expected %d but got %d" len n
 
 
--- TODO rename this
-class Unpackable2 l where
-  get2 :: A.Parser (PList l)
-
-instance Unpackable2 LNil where
-  get2 = return LNil
-
-instance (MSG.Unpackable a, Unpackable2 l) => Unpackable2 (a :~ l) where
-  get2 = (:~) <$> MSG.get <*> get2
-
-
 -- TODO tryUnpack
-translateCall2 :: (MSG.Unpackable (PList l), ToParamList2 f l r, MSG.Packable r) => f -> (ByteString -> ByteString)
-translateCall2 f = \bs -> lazyToStrictBS $ MSG.pack (transed_f (MSG.unpack bs))
-  where
-    transed_f = translate2 f
+uncurryMsgpack :: (MSG.Unpackable (TypeList l), ToTypeList f l r, MSG.Packable r) => f -> (ByteString -> ByteString)
+uncurryMsgpack f = \bs -> lazyToStrictBS $ MSG.pack (translate f $ MSG.unpack bs)
