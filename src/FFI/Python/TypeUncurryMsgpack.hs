@@ -1,5 +1,13 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# LANGUAGE DataKinds, TypeOperators, FlexibleInstances, ScopedTypeVariables, FlexibleContexts #-}
+{-# OPTIONS_GHC -cpp -fno-warn-orphans #-}
+
+#if MIN_VERSION_base(4,6,0)
+#define USE_DATA_KINDS 1
+#endif
+
+#if USE_DATA_KINDS
+{-# LANGUAGE DataKinds, TypeOperators #-}
+#endif
+{-# LANGUAGE TypeOperators, ScopedTypeVariables, FlexibleContexts #-}
 
 module FFI.Python.TypeUncurryMsgpack where
 
@@ -9,9 +17,16 @@ import           Data.ByteString (ByteString)
 import qualified Data.MessagePack as MSG
 import           Text.Printf
 
-import FFI.Python.TypeUncurry
 import FFI.Python.Copied
 import FFI.Python.Util
+
+-- For GHC 7.6 or newer, we import TypeUncurry which uses DataKinds for TypeList to be kind-safe.
+-- For all other versions, import TypeUncurryLegacy which uses a simpler model of TypeList.
+#if USE_DATA_KINDS
+import FFI.Python.TypeUncurry
+#else
+import FFI.Python.TypeUncurryLegacy
+#endif
 
 
 -- | Helper to allow writing a 'MSG.Unpackable' instance for 'TypeList's.
@@ -22,11 +37,19 @@ class UnpackableRec l where
   getRec :: A.Parser (TypeList l)
 
 -- | When no more types need to be unpacked, we are done.
-instance UnpackableRec '[] where
+#if USE_DATA_KINDS
+instance UnpackableRec '[] where -- For GHC 7.6 or newer, use DataKinds.
+#else
+instance UnpackableRec Nil where
+#endif
   getRec = return Nil
 
 -- | Unpack one type by just parsing the next element.
-instance (MSG.Unpackable a, UnpackableRec l) => UnpackableRec (a ': l) where
+#if USE_DATA_KINDS
+instance (MSG.Unpackable a, UnpackableRec l) => UnpackableRec (a ': l) where  -- For GHC 7.6 or newer, use DataKinds.
+#else
+instance (MSG.Unpackable a, UnpackableRec l) => UnpackableRec (a ::: l) where
+#endif
   getRec = (:::) <$> MSG.get <*> getRec
 
 
