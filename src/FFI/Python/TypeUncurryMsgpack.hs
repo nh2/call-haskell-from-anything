@@ -36,11 +36,7 @@ import FFI.Python.Util
 
 -- For GHC 7.6 or newer, we import TypeUncurry which uses DataKinds for TypeList to be kind-safe.
 -- For all other versions, import TypeUncurryLegacy which uses a simpler model of TypeList.
-#if USE_DATA_KINDS
 import FFI.Python.TypeUncurry
-#else
-import FFI.Python.TypeUncurryLegacy
-#endif
 
 
 -- | Helper to allow writing a 'MSG.Unpackable' instance for 'TypeList's.

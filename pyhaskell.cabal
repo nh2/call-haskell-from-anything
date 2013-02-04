@@ -26,11 +26,12 @@ library
   exposed-modules:
     FFI.Python.TH
     FFI.Python.Copied
+    FFI.Python.TypeUncurry
     FFI.Python.TypeUncurryLegacy
     FFI.Python.TypeUncurryMsgpack
   if impl(ghc >= 7.6.0)
     exposed-modules:
-      FFI.Python.TypeUncurry
+      FFI.Python.TypeUncurryDataKinds
   other-modules:
     FFI.Python.Util
     Test1
