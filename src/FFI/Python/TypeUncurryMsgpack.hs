@@ -46,16 +46,22 @@ instance (UnpackableRec l, ParamLength l) => MSG.Unpackable (TypeList l) where
 
 
 
--- TODO tryUnpack
 -- | Translates a function of type @a -> b -> ... -> Identity r@ to
 -- a function that:
 --
 -- * takes as a single argument a 'ByteString' containing all arguments serialized in a MessagePack array
 --
 -- * returns its result serialized in a 'ByteString' via MessagePack 'MSG.pack'
+--
+-- This function throws an 'error' if the de-serialization of the arguments fails!
+-- It is recommended to use 'tryUncurryMsgpack' instead.
 uncurryMsgpack :: (MSG.Unpackable (TypeList l), ToTypeList f l r, MSG.Packable r) => f -> (ByteString -> ByteString)
-uncurryMsgpack f = \bs -> lazyToStrictBS $ MSG.pack (transed_f (MSG.unpack bs))
-  where
-    transed_f = translate f
+uncurryMsgpack f = \bs -> lazyToStrictBS $ MSG.pack (translate f $ MSG.unpack bs)
 
 
+-- | Like 'uncurryMsgpack', but makes it clear when the 'ByteString' containing
+-- the function arguments does not contain the right number/types of arguments.
+tryUncurryMsgpack :: (MSG.Unpackable (TypeList l), ToTypeList f l r, MSG.Packable r) => f -> (ByteString -> Either String ByteString)
+tryUncurryMsgpack f = \bs -> case MSG.tryUnpack bs of
+  Left e     -> Left e
+  Right args -> Right $ lazyToStrictBS $ MSG.pack (translate f $ args)
