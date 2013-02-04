@@ -27,6 +27,7 @@ library
     FFI.Anything.TH
     FFI.Anything.Copied
     FFI.Anything.TypeUncurry
+    FFI.Anything.TypeUncurry.ReturnResult
     FFI.Anything.TypeUncurry.Legacy
     FFI.Anything.TypeUncurry.Msgpack
   if impl(ghc >= 7.6.0)

@@ -23,7 +23,13 @@
 --   library (@.so@ \/ @.dll@) and call them via C\/Python\/Ruby\/whatever via @dlopen()@ or equivalents.
 --
 -- * Expose Haskell functions via a socket / the web
-module FFI.Anything.TypeUncurry.Msgpack where
+module FFI.Anything.TypeUncurry.Msgpack (
+  UnpackableRec (..)
+, getTypeListFromMsgpackArray
+, uncurryMsgpack
+, tryUncurryMsgpack
+, module FFI.Anything.TypeUncurry.ReturnResult
+) where
 
 import           Control.Applicative
 import qualified Data.Attoparsec as A
@@ -33,6 +39,7 @@ import           Text.Printf
 
 import FFI.Anything.Copied
 import FFI.Anything.Util
+import FFI.Anything.TypeUncurry.ReturnResult
 
 -- For GHC 7.6 or newer, we import TypeUncurry which uses DataKinds for TypeList to be kind-safe.
 -- For all other versions, import TypeUncurryLegacy which uses a simpler model of TypeList.
