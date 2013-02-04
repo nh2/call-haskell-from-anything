@@ -12,7 +12,7 @@ import           Control.Monad.Identity
 
 import Foreign.C
 
-import FFI.Python.TH (deriveCallable)
+-- import FFI.Python.TH (deriveCallable)
 import FFI.Python.TypeUncurryMsgpack
 
 
@@ -74,6 +74,7 @@ fib n = fib (n-1) + fib (n-2)
 
 
 foreign export ccall fib_export :: CString -> IO CString
+fib_export :: CString -> IO CString
 fib_export = mkExport . uncurryMsgpack $ (\x -> (return $ fib x) :: Identity Int)
 
 -- $(deriveCallable 'f1 "f1_hs")
