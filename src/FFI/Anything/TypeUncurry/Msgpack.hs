@@ -68,7 +68,7 @@ instance (MSG.Unpackable a, UnpackableRec l) => UnpackableRec (a ::: l) where
 getTypeListFromMsgpackArray :: forall l . (UnpackableRec l, ParamLength l) => A.Parser (TypeList l)
 getTypeListFromMsgpackArray = parseArray f
   where
-    len = paramLength (undefined :: Proxy l)
+    len = paramLength (Proxy :: Proxy l)
     f n | n == len  = getRec
         -- TODO also print function name
         | otherwise = fail $ printf "getTypeListFromMsgpackArray: wrong number of function arguments: expected %d but got %d" len n
