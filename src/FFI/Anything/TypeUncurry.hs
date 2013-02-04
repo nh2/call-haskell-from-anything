@@ -11,11 +11,11 @@
 
 -- Oh man, CPP for comments. Getting fastidious ...
 #if USE_DATA_KINDS
--- | For documentation, see the exported module "FFI.Python.TypeUncurryDataKinds".
+-- | For documentation, see the exported module "FFI.Anything.TypeUncurryDataKinds".
 #else
--- | For documentation, see the exported module "FFI.Python.TypeUncurryLegacy".
+-- | For documentation, see the exported module "FFI.Anything.TypeUncurryLegacy".
 #endif
-module FFI.Python.TypeUncurry (
+module FFI.Anything.TypeUncurry (
   module TypeUncurryImplementation
 ) where
 
@@ -23,7 +23,7 @@ module FFI.Python.TypeUncurry (
 -- For GHC 7.6 or newer, we import TypeUncurry which uses DataKinds for TypeList to be kind-safe.
 -- For all other versions, import TypeUncurryLegacy which uses a simpler model of TypeList.
 #if USE_DATA_KINDS
-import FFI.Python.TypeUncurryDataKinds as TypeUncurryImplementation
+import FFI.Anything.TypeUncurry.DataKinds as TypeUncurryImplementation
 #else
-import FFI.Python.TypeUncurryLegacy as TypeUncurryImplementation
+import FFI.Anything.TypeUncurry.Legacy as TypeUncurryImplementation
 #endif

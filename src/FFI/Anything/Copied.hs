@@ -2,7 +2,7 @@
 -- that are unfortunately not yet exposed.
 --
 -- See https://github.com/msgpack/msgpack-haskell/pull/34.
-module FFI.Python.Copied where
+module FFI.Anything.Copied where
 
 import           Blaze.ByteString.Builder
 import qualified Data.Attoparsec as A

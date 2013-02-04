@@ -1,5 +1,5 @@
 -- | Contains some helper functions.
-module FFI.Python.Util (
+module FFI.Anything.Util (
   lazyToStrictBS
 ) where
 

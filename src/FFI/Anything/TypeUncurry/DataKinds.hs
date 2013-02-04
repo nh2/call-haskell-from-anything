@@ -31,7 +31,7 @@
 -- >f' = translateCall f
 -- >
 -- >result = f' (unpack someBytestring)
-module FFI.Python.TypeUncurryDataKinds where
+module FFI.Anything.TypeUncurry.DataKinds where
 
 import           Control.Monad.Identity
 

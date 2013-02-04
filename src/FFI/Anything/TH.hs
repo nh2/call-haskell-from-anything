@@ -1,4 +1,4 @@
-module FFI.Python.TH where
+module FFI.Anything.TH where
 
 import Language.Haskell.TH
 
@@ -60,7 +60,7 @@ deriveCallable funName exportedName = do
 --
 --   VarI
 --     -- Name
---     FFI.Python.f
+--     FFI.Anything.f
 --     -- Type
 --     (AppT (AppT ArrowT (ConT GHC.Types.Int)) (AppT (AppT ArrowT (ConT GHC.Types.Double)) (ConT GHC.Base.String)))
 --     -- Maybe Dec

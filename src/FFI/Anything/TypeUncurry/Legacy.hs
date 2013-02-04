@@ -3,7 +3,7 @@
 -- | Converts function arguments to tuple-like types.
 --
 -- This module is the LEGACY module not using DataKinds.
--- Compilers supporting DataKinds (e.g. GHC >= 7.6) should use "FFI.Python.TypeUncurry".
+-- Compilers supporting DataKinds (e.g. GHC >= 7.6) should use "FFI.Anything.TypeUncurry".
 --
 -- For example, take @f :: a -> b -> c -> r@.
 -- This module can convert it to @f' :: (a, b, c) -> r@, at compile time.
@@ -34,7 +34,7 @@
 -- >f' = translateCall f
 -- >
 -- >result = f' (unpack someBytestring)
-module FFI.Python.TypeUncurryLegacy where
+module FFI.Anything.TypeUncurry.Legacy where
 
 import           Control.Monad.Identity
 

@@ -12,8 +12,8 @@ import           Control.Monad.Identity
 
 import Foreign.C
 
--- import FFI.Python.TH (deriveCallable)
-import FFI.Python.TypeUncurryMsgpack
+-- import FFI.Anything.TH (deriveCallable)
+import FFI.Anything.TypeUncurry.Msgpack
 
 
 
