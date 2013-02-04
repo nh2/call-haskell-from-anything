@@ -8,6 +8,6 @@ import qualified Data.ByteString.Lazy as BSL
 import           Data.Monoid
 
 
--- Could use Data.ByteString.Lazy.toStrict starting from bytestring 0.10.0.0
+-- | Could use Data.ByteString.Lazy.toStrict starting from bytestring 0.10.0.0
 lazyToStrictBS :: BSL.ByteString -> ByteString
 lazyToStrictBS = mconcat . BSL.toChunks

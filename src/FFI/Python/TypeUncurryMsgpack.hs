@@ -9,6 +9,20 @@
 #endif
 {-# LANGUAGE TypeOperators, ScopedTypeVariables, FlexibleContexts #-}
 
+-- | Easy FFI via MessagePack.
+--
+-- You can use this module to expose any Haskell function to other Programming languages.
+--
+-- It allows to convert functions that take multiple arguments
+-- into functions that take one argument:
+-- A 'ByteString' which contains all arguments encoded as a MessagePack array.
+--
+-- Common use cases:
+--
+-- * Write functions in fast native Haskell code, compile them into a dynamic.
+--   library (@.so@ \/ @.dll@) and call them via C\/Python\/Ruby\/whatever via @dlopen()@ or equivalents.
+--
+-- * Expose Haskell functions via a socket / the web
 module FFI.Python.TypeUncurryMsgpack where
 
 import           Control.Applicative
@@ -55,17 +69,17 @@ instance (MSG.Unpackable a, UnpackableRec l) => UnpackableRec (a ::: l) where
 
 
 -- | Parses a tuple of arbitrary size ('TypeList's) from a MessagePack array.
-getTypeListFromArray :: forall l . (UnpackableRec l, ParamLength l) => A.Parser (TypeList l)
-getTypeListFromArray = parseArray f
+getTypeListFromMsgpackArray :: forall l . (UnpackableRec l, ParamLength l) => A.Parser (TypeList l)
+getTypeListFromMsgpackArray = parseArray f
   where
     len = paramLength (undefined :: Proxy l)
     f n | n == len  = getRec
         -- TODO also print function name
-        | otherwise = fail $ printf "getTypeListFromArray: wrong number of function arguments: expected %d but got %d" len n
+        | otherwise = fail $ printf "getTypeListFromMsgpackArray: wrong number of function arguments: expected %d but got %d" len n
 
 
 instance (UnpackableRec l, ParamLength l) => MSG.Unpackable (TypeList l) where
-  get = getTypeListFromArray
+  get = getTypeListFromMsgpackArray
 
 
 

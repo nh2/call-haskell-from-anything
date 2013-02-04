@@ -24,18 +24,16 @@ library
   hs-source-dirs:
     src, test
   exposed-modules:
-      FFI.Python.TH
-    , FFI.Python.Copied
-      FFI.Python.TypeUncurryMsgpack
+    FFI.Python.TH
+    FFI.Python.Copied
+    FFI.Python.TypeUncurryLegacy
+    FFI.Python.TypeUncurryMsgpack
   if impl(ghc >= 7.6.0)
     exposed-modules:
       FFI.Python.TypeUncurry
-  if impl(ghc < 7.6.0)
-    exposed-modules:
-      FFI.Python.TypeUncurryLegacy
   other-modules:
-      FFI.Python.Util
-      Test1
+    FFI.Python.Util
+    Test1
   build-depends:
       base >= 4 && < 5
     , bytestring >= 0.9.2.1

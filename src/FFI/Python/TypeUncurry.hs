@@ -71,8 +71,6 @@ infixr :::
    (similar to how you make variadic functions).
 -}
 
--- The following 2 type families
-
 -- | Arguments to a function, e.g. @[String, Int]@ for @String -> Int -> r@.
 type family Param f :: [*]
 -- | We need an 'Identity' moad wrapper here to not conflict with @a -> f@.
@@ -127,6 +125,9 @@ data Proxy k = Proxy
 --
 -- We need to use a 'Proxy' for this.
 class ParamLength (l :: [*]) where
+  -- | Calculates the length of a type list, put into a proxy. Usage:
+  --
+  -- >paramLength (undefined :: Proxy l)
   paramLength :: Proxy l -> Int
 
 instance ParamLength '[] where
