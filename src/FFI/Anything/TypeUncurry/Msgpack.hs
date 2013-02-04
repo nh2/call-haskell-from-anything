@@ -28,13 +28,17 @@ module FFI.Anything.TypeUncurry.Msgpack (
 , getTypeListFromMsgpackArray
 , uncurryMsgpack
 , tryUncurryMsgpack
+, byteStringToCStringFun
+, export
 , module FFI.Anything.TypeUncurry.ReturnResult
 ) where
 
 import           Control.Applicative
 import qualified Data.Attoparsec as A
 import           Data.ByteString (ByteString)
+import qualified Data.ByteString as BS
 import qualified Data.MessagePack as MSG
+import           Foreign.C
 import           Text.Printf
 
 import FFI.Anything.Copied
@@ -105,3 +109,17 @@ tryUncurryMsgpack :: (MSG.Unpackable (TypeList l), ToTypeList f l r, MSG.Packabl
 tryUncurryMsgpack f = \bs -> case MSG.tryUnpack bs of
   Left e     -> Left e
   Right args -> Right $ lazyToStrictBS $ MSG.pack (translate f $ args)
+
+
+-- * Exporting
+
+byteStringToCStringFun :: (ByteString -> ByteString) -> CString -> IO CString
+byteStringToCStringFun f cs = do
+  cs_bs <- BS.packCString cs
+  let res_bs = f cs_bs
+  res_cs <- BS.useAsCString res_bs return
+  return res_cs
+
+
+export :: (MSG.Unpackable (TypeList l), ToTypeList f l r, MSG.Packable r) => f -> CString -> IO CString
+export = byteStringToCStringFun . uncurryMsgpack

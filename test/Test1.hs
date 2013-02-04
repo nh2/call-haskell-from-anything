@@ -41,14 +41,6 @@ f1_hs cs = do
     return res_cs
 
 
-mkExport :: (ByteString -> ByteString) -> CString -> IO CString
-mkExport f cs = do
-    cs_bs <- BS.packCString cs
-    let res_bs = f cs_bs
-    res_cs <- BS.useAsCString res_bs return
-    return res_cs
-
-
 f1_identity :: Int -> Double -> Identity String
 f1_identity a b = return $ f1 a b
 
@@ -75,9 +67,6 @@ fib n = fib (n-1) + fib (n-2)
 
 foreign export ccall fib_export :: CString -> IO CString
 fib_export :: CString -> IO CString
-fib_export = mkExport . uncurryMsgpack $ (\x -> (return $ fib x) :: Identity Int)
+fib_export = export . returnId2 $ fib
 
 -- $(deriveCallable 'f1 "f1_hs")
-
-
-
