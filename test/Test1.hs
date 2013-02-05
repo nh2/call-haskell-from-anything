@@ -55,7 +55,7 @@ f1_t = uncurryMsgpack f1_identity
 
 foreign export ccall f1_t_export :: CString -> IO CString
 f1_t_export :: CString -> IO CString
-f1_t_export = mkExport f1_t
+f1_t_export = byteStringToCStringFun f1_t
 
 
 
