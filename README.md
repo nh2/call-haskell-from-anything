@@ -109,6 +109,16 @@ def wrap_into_msgpack(foreign_fun):
 ```
 
 
+A full example
+--------------
+
+TODO.
+
+* Show needed imports and language extensions, link to example file.
+* Link to example Python/Ruby/C code loading the dynamic library.
+* Link to example cabal file that shows how to build a dynamic library.
+
+
 FAQ
 ---
 
