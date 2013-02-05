@@ -1,7 +1,7 @@
 from ctypes import *
 import msgpack
 
-lib = cdll.LoadLibrary("dist/build/pyhaskell.so/pyhaskell.so")
+lib = cdll.LoadLibrary("dist/build/call-haskell-from-anything.so/call-haskell-from-anything.so")
 
 lib.hs_init(0, 0)
 
@@ -40,7 +40,7 @@ print "Haskell fib:", fib(13)
 
 sum = 0
 for x in xrange(100000):
-    sum += fib("13")
+    sum += fib(15)
 print sum
 
 lib.hs_exit()
