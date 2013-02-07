@@ -9,21 +9,22 @@
 #endif
 {-# LANGUAGE TypeOperators, ScopedTypeVariables, FlexibleContexts #-}
 
--- Oh man, CPP for comments. Getting fastidious ...
-#if USE_DATA_KINDS
--- | For documentation, see the exported module "FFI.Anything.TypeUncurryDataKinds".
-#else
--- | For documentation, see the exported module "FFI.Anything.TypeUncurryLegacy".
-#endif
+-- | For GHC 7.6 or newer, we use (and re-export) "FFI.Anything.TypeUncurry.DataKinds" which uses DataKinds for TypeList to be kind-safe.
+--
+-- For all other versions, use (and re-export) "FFI.Anything.TypeUncurry.Legacy" which uses a simpler model of TypeList.
 module FFI.Anything.TypeUncurry (
-  module TypeUncurryImplementation
+#if USE_DATA_KINDS
+  -- | You see this because your compiler supports DataKinds.
+  module FFI.Anything.TypeUncurry.DataKinds
+#else
+  -- | You see this because your compiler does not support DataKinds.
+  module FFI.Anything.TypeUncurry.Legacy
+#endif
 ) where
 
 
--- For GHC 7.6 or newer, we import TypeUncurry which uses DataKinds for TypeList to be kind-safe.
--- For all other versions, import TypeUncurryLegacy which uses a simpler model of TypeList.
 #if USE_DATA_KINDS
-import FFI.Anything.TypeUncurry.DataKinds as TypeUncurryImplementation
+import FFI.Anything.TypeUncurry.DataKinds
 #else
-import FFI.Anything.TypeUncurry.Legacy as TypeUncurryImplementation
+import FFI.Anything.TypeUncurry.Legacy
 #endif

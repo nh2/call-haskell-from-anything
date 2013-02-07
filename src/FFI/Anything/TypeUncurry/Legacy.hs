@@ -68,14 +68,16 @@ infixr :::
 
 -- | Arguments to a function, e.g. @[String, Int]@ for @String -> Int -> r@.
 type family Param f
--- | We need an 'Identity' moad wrapper here to not conflict with @a -> f@.
+-- | For pure functions, we need an 'Identity' monad wrapper here to not conflict with @a -> f@.
 type instance Param (Identity r) = Nil
+type instance Param (IO r) = Nil
 type instance Param (a -> f) = a ::: Param f
 
 -- | The result of a function, e.g. @r@ for @String -> Int -> r@.
 type family Result f
--- | We need an 'Identity' monad wrapper here to not conflict with @a -> f@.
+-- | For pure functions, we need an 'Identity' monad wrapper here to not conflict with @a -> f@.
 type instance Result (Identity r) = r
+type instance Result (IO r) = IO r
 type instance Result (a -> f) = Result f
 
 
@@ -87,15 +89,20 @@ class (Param f ~ l, Result f ~ r) => ToTypeList f l r where
   -- Example: @t1 -> ... -> tn -> r@ becomes @TypeList (t1 ::: ... ::: tn ::: Nil) -> r@.
   translate :: f -> TypeList l -> r
 
--- | Base case: A function without arguments (just @Identity r@)
--- can be translated to @TypeList Nil -> r@.
+-- | Recursive case: A "pure" function of type @a -> ... -> r@
+-- can be translated to @TypeList (a ::: ...) -> r@.
 instance (ToTypeList f l r) => ToTypeList (a -> f) (a ::: l) r where
   translate f (a ::: l) = translate (f a) l
 
--- | Recursive case: A function of type @a -> ... -> r@
--- can be translated to @TypeList (a ::: ...) -> r@.
+-- | Base case: A "pure" function without arguments (just @Identity r@)
+-- can be translated to @TypeList Nil -> r@.
 instance ToTypeList (Identity r) Nil r where
   translate (Identity r) Nil = r
+
+-- | Base case: An IO function without arguments (just @Identity r@)
+-- can be translated to @TypeList Nil -> r@.
+instance ToTypeList (IO r) Nil (IO r) where
+  translate ior Nil = ior
 
 
 -- * Length of type-level lists

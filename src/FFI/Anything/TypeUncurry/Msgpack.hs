@@ -28,8 +28,11 @@ module FFI.Anything.TypeUncurry.Msgpack (
 , getTypeListFromMsgpackArray
 , uncurryMsgpack
 , tryUncurryMsgpack
+, tryUncurryMsgpackIO
 , byteStringToCStringFun
+, byteStringToCStringFunIO
 , export
+, exportIO
 , module FFI.Anything.TypeUncurry.ReturnResult
 ) where
 
@@ -100,7 +103,15 @@ instance (UnpackableRec l, ParamLength l) => MSG.Unpackable (TypeList l) where
 -- This function throws an 'error' if the de-serialization of the arguments fails!
 -- It is recommended to use 'tryUncurryMsgpack' instead.
 uncurryMsgpack :: (MSG.Unpackable (TypeList l), ToTypeList f l r, MSG.Packable r) => f -> (ByteString -> ByteString)
-uncurryMsgpack f = \bs -> lazyToStrictBS $ MSG.pack (translate f $ MSG.unpack bs)
+uncurryMsgpack f = \bs -> lazyToStrictBS . MSG.pack $ (translate f $ MSG.unpack bs)
+
+
+-- | Like 'uncurryMsgpack', but for 'IO' functions.
+--
+-- This function throws an 'error' if the de-serialization of the arguments fails!
+-- It is recommended to use 'tryUncurryMsgpackIO' instead.
+uncurryMsgpackIO :: (MSG.Unpackable (TypeList l), ToTypeList f l (IO r), MSG.Packable r) => f -> (ByteString -> IO ByteString)
+uncurryMsgpackIO f = \bs -> lazyToStrictBS . MSG.pack <$> (translate f $ MSG.unpack bs)
 
 
 -- | Like 'uncurryMsgpack', but makes it clear when the 'ByteString' containing
@@ -108,11 +119,22 @@ uncurryMsgpack f = \bs -> lazyToStrictBS $ MSG.pack (translate f $ MSG.unpack bs
 tryUncurryMsgpack :: (MSG.Unpackable (TypeList l), ToTypeList f l r, MSG.Packable r) => f -> (ByteString -> Either String ByteString)
 tryUncurryMsgpack f = \bs -> case MSG.tryUnpack bs of
   Left e     -> Left e
-  Right args -> Right $ lazyToStrictBS $ MSG.pack (translate f $ args)
+  Right args -> Right . lazyToStrictBS . MSG.pack $ (translate f $ args)
+
+
+-- | Like 'uncurryMsgpack', but makes it clear when the 'ByteString' containing
+-- the function arguments does not contain the right number/types of arguments.
+tryUncurryMsgpackIO :: (MSG.Unpackable (TypeList l), ToTypeList f l (IO r), MSG.Packable r) => f -> (ByteString -> Either String (IO ByteString))
+tryUncurryMsgpackIO f = \bs -> case MSG.tryUnpack bs of
+  Left e     -> Left e
+  Right args -> Right $ lazyToStrictBS . MSG.pack <$> (translate f $ args)
 
 
 -- * Exporting
 
+-- TODO implement via byteStringToCStringFunIO?
+-- | Transforms a 'ByteString'-mapping function to 'CString'-mapping function
+-- for use in the FFI.
 byteStringToCStringFun :: (ByteString -> ByteString) -> CString -> IO CString
 byteStringToCStringFun f cs = do
   cs_bs <- BS.packCString cs
@@ -121,5 +143,32 @@ byteStringToCStringFun f cs = do
   return res_cs
 
 
+-- | Transforms a 'ByteString'-mapping 'IO' function to 'CString'-mapping function
+-- for use in the FFI.
+byteStringToCStringFunIO :: (ByteString -> IO ByteString) -> CString -> IO CString
+byteStringToCStringFunIO f cs = do
+  cs_bs <- BS.packCString cs
+  res_bs <- f cs_bs
+  res_cs <- BS.useAsCString res_bs return
+  return res_cs
+
+
+-- | Exports a "pure" function (usually it has to be wrapped in the Identity monad)
+-- to an FFI function that takes its arguments as a serialized MessagePack message.
+--
+-- Calling this function throws an 'error' if the de-serialization of the arguments fails!
+-- Use 'tryExport' if you want to handle this case.
 export :: (MSG.Unpackable (TypeList l), ToTypeList f l r, MSG.Packable r) => f -> CString -> IO CString
 export = byteStringToCStringFun . uncurryMsgpack
+
+
+-- | Exports an 'IO' function to an FFI function that takes its arguments as a serialized MessagePack message.
+--
+-- Calling this function throws an 'error' if the de-serialization of the arguments fails!
+-- Use 'tryExportIO' if you want to handle this case.
+exportIO :: (MSG.Unpackable (TypeList l), ToTypeList f l (IO r), MSG.Packable r) => f -> CString -> IO CString
+exportIO = byteStringToCStringFunIO . uncurryMsgpackIO
+
+
+-- TODO make equivalent using tryUncurryMsgpack (tryExport)
+-- TODO make equivalent using tryUncurryMsgpackIO (tryExport)
