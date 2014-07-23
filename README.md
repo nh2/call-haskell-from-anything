@@ -112,11 +112,24 @@ def wrap_into_msgpack(foreign_fun):
 A full example
 --------------
 
-TODO.
+You can run the stock example in this repository:
+
+```bash
+sudo apt-get install python-msgpack  # or equivalent for your system
+# Important: All used libraries have to be installed with --enable-shared,
+# so better use a cabal sandbox.
+cabal sandbox init
+cabal install --only-dependencies --enable-shared -j8
+cabal configure --enable-shared
+# You might have to adjust the path to libHSrts-ghc7.6.3.so in the .cabal file
+cabal build
+python test.py  # If this works, you're all fine!
+```
+
+**TODO**: Detail some of the code here.
 
 * Show needed imports and language extensions, link to example file.
 * Link to example Python/Ruby/C code loading the dynamic library.
-* Link to example cabal file that shows how to build a dynamic library.
 
 
 FAQ
