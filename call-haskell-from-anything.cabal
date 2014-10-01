@@ -66,5 +66,9 @@ executable call-haskell-from-anything.so
   -- For building TemplateHaskell with cabal and -dynamic, we have to disable -dynamic sometimes
     -no-hs-main -fPIC -shared -dynamic
   --  -no-hs-main
-  -- TODO remove hardcoded path somehow
-  ld-options: -shared /usr/lib/ghc/libHSrts-ghc7.6.3.so
+  ld-options: -shared
+
+  -- Change the following line to match your GHC version. For example,
+  -- using GHC 7.8.2, the extra-libraries should read,
+  -- "HSrts-ghc7.8.2".
+  extra-libraries: HSrts-ghc7.6.3
