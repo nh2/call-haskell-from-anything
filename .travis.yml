@@ -5,7 +5,7 @@ ghc:
   - 7.6
 
 before_install:
-  - sudo apt-get install python-msgpack
+  - sudo apt-get install msgpack-python
 
 script:
   # Travis default from http://docs.travis-ci.com/user/languages/haskell/
