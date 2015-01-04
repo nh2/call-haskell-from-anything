@@ -37,7 +37,7 @@ module FFI.Anything.TypeUncurry.Msgpack (
 ) where
 
 import           Control.Applicative
-import qualified Data.Attoparsec as A
+import qualified Data.Attoparsec.ByteString as A
 import           Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import qualified Data.MessagePack as MSG

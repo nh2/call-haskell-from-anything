@@ -5,7 +5,7 @@
 module FFI.Anything.Copied where
 
 import           Blaze.ByteString.Builder
-import qualified Data.Attoparsec as A
+import qualified Data.Attoparsec.ByteString as A
 import           Data.Bits
 import           Data.Monoid
 import           Data.Word
