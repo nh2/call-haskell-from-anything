@@ -62,7 +62,7 @@ executable call-haskell-from-anything.so
     , msgpack
     , mtl
   ghc-options:
-  -- For building TemplateHaskell with cabal and -dynamic, we have to disable -dynamic sometimes
+    -- For building TemplateHaskell with cabal and -dynamic, we have to disable -dynamic sometimes
     -no-hs-main -fPIC -shared -dynamic
   --  -no-hs-main
   -- TODO remove hardcoded path somehow
