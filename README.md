@@ -1,6 +1,8 @@
 call-haskell-from-anything
 ==========================
 
+[![Build Status](https://travis-ci.org/nh2/call-haskell-from-anything.png)](https://travis-ci.org/nh2/call-haskell-from-anything)
+
 Call Haskell functions from any programming language via serialization and dynamic libraries.
 
 [Skip the philosophy, jump right to the code!](#usage)
