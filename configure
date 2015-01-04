@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+# Pass all arguments that cabal passes us to the python script.
+python2 detect-ghc-buildinfo.py $@

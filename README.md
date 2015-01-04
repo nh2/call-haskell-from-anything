@@ -125,8 +125,9 @@ cabal install --only-dependencies --enable-shared -j8
 cabal configure --enable-shared
 
 # If the above doesn't work, you may have to adjust name of the shared
-# library for the Haskell RTS `libHSrts-ghc*.*.*.so` in the .cabal file,
-# depending on how it is called in your OS.
+# library for the Haskell RTS `libHSrts-ghc*.*.*.so` in the
+# `detect-ghc-buildinfo` file, depending on how the .so file is called
+# in your OS.
 # If it is just in a different location, pass
 #   --extra-lib-dirs=/path/to/ghc/lib/ghc-*.*.*/rts-1.0/
 # to `cabal configure`.

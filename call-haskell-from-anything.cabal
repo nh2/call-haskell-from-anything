@@ -4,7 +4,9 @@ license:       MIT
 author:        Niklas Hambüchen (mail@nh2.me)
 maintainer:    Niklas Hambüchen (mail@nh2.me)
 category:      Network
-build-type:    Simple
+-- We use Configure to determine the `extra-libraries: HSrts-ghc*.*.*` field.
+-- See the ./configure script.
+build-type:    Configure
 License:       MIT
 synopsis:      Python-to-Haskell function calls
 stability:     experimental
@@ -12,6 +14,11 @@ tested-With:   GHC==7.4.2
 cabal-version: >= 1.10
 homepage:      https://github.com/nh2/call-haskell-from-anything
 bug-Reports:   https://github.com/nh2/call-haskell-from-anything/issues
+
+
+extra-source-files:
+  configure
+  detect-ghc-buildinfo.py
 
 
 source-repository head
@@ -64,24 +71,11 @@ executable call-haskell-from-anything.so
     -- For building TemplateHaskell with cabal and -dynamic, we have to disable -dynamic sometimes
     -no-hs-main -fPIC -shared -dynamic
 
-  -- When using a GHC who'se libHSrts-ghc*.*.*.so is not in LIBRARY_PATH, run
-  --`cabal configure` with the
-  -- `--extra-lib-dirs=/path/to/ghc/lib/ghc-*-*-*/rts-1.0/` flag.
-
   -- If we don't specify the Haskell RTS as extra-libraries, we get errors like
   -- the following when calling from some other language:
   --   /usr/lib/ghc/ghc-prim-0.3.0.0/libHSghc-prim-0.3.0.0-ghc7.6.3.so: undefined symbol: stg_forkOnzh
   --
-  -- Not sure yet how to best get rid of enumerating all GHC versions here...
-
-  if impl(ghc == 7.6.3)
-    extra-libraries: HSrts-ghc7.6.3
-
-  if impl(ghc == 7.8.2)
-    extra-libraries: HSrts-ghc7.8.2
-
-  if impl(ghc == 7.8.3)
-    extra-libraries: HSrts-ghc7.8.3
-
-  if impl(ghc == 7.8.4)
-    extra-libraries: HSrts-ghc7.8.4
+  -- The `build-type: Configure` with the `./configure` script makes sure that
+  -- an `extra-libraries: HSrts-ghc*.*.*` field is added using cabal's .buildinfo infrastructure.
+  -- See http://stackoverflow.com/questions/6034526/how-can-configuration-tools-like-sdl-config-be-used-with-a-cabalized-project
+  -- and https://github.com/nh2/call-haskell-from-anything/pull/2#issuecomment-68638262.
