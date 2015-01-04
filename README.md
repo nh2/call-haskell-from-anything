@@ -117,11 +117,18 @@ You can run the stock example in this repository:
 ```bash
 sudo apt-get install python-msgpack  # or equivalent for your system
 # Important: All used libraries have to be installed with --enable-shared,
-# so better use a cabal sandbox.
+# so better use a cabal sandbox:
 cabal sandbox init
 cabal install --only-dependencies --enable-shared -j8
 cabal configure --enable-shared
-# You might have to adjust the path to libHSrts-ghc7.6.3.so in the .cabal file
+
+# If the above doesn't work, you may have to adjust name of the shared
+# library for the Haskell RTS `libHSrts-ghc*.*.*.so` in the .cabal file,
+# depending on how it is called in your OS.
+# If it is just in a different location, pass
+#   --extra-lib-dirs=/path/to/ghc/lib/ghc-*.*.*/rts-1.0/
+# to `cabal configure`.
+
 cabal build
 python test.py  # If this works, you're all fine!
 ```
