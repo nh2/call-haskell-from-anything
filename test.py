@@ -6,7 +6,6 @@ lib = cdll.LoadLibrary("dist/build/call-haskell-from-anything.so/call-haskell-fr
 lib.hs_init(0, 0)
 
 # Set function return type to string
-# fun = lib.f1_hs
 fun = lib.f1_t_export
 fun.restype = c_char_p
 
