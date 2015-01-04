@@ -49,8 +49,8 @@ import FFI.Anything.Copied
 import FFI.Anything.Util
 import FFI.Anything.TypeUncurry.ReturnResult
 
--- For GHC 7.6 or newer, we import TypeUncurry which uses DataKinds for TypeList to be kind-safe.
--- For all other versions, import TypeUncurryLegacy which uses a simpler model of TypeList.
+-- For GHC 7.6 or newer, this imports a TypeUncurry that uses DataKinds for TypeList to be kind-safe.
+-- For older versions, it imports TypeUncurryLegacy which uses a weaker model of TypeList.
 import FFI.Anything.TypeUncurry
 
 
