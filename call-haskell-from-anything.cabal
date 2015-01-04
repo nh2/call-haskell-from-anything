@@ -37,9 +37,8 @@ library
     FFI.Anything.Util
   build-depends:
       base >= 4 && < 5
-    , bytestring >= 0.9.2.1
+    , bytestring >= 0.10.0.0
     , msgpack >= 0.7.1.5
-    , blaze-builder >= 0.3.1.0
     , template-haskell
     , mtl >= 2.1.2
     , attoparsec >= 0.10.3.0

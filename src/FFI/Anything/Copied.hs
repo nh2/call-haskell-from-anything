@@ -4,7 +4,7 @@
 -- See https://github.com/msgpack/msgpack-haskell/pull/34.
 module FFI.Anything.Copied where
 
-import           Blaze.ByteString.Builder
+import           Data.ByteString.Lazy.Builder
 import qualified Data.Attoparsec.ByteString as A
 import           Data.Bits
 import           Data.Monoid
@@ -17,13 +17,13 @@ fromArray :: (a -> Int) -> (a -> Builder) -> a -> Builder
 fromArray lf pf arr = do
   case lf arr of
     len | len <= 15 ->
-      fromWord8 $ 0x90 .|. fromIntegral len
+      word8 $ 0x90 .|. fromIntegral len
     len | len < 0x10000 ->
-      fromWord8 0xDC <>
-      fromWord16be (fromIntegral len)
+      word8 0xDC <>
+      word16BE (fromIntegral len)
     len ->
-      fromWord8 0xDD <>
-      fromWord32be (fromIntegral len)
+      word8 0xDD <>
+      word32BE (fromIntegral len)
   <> pf arr
 
 
