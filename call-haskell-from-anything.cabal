@@ -54,14 +54,13 @@ executable call-haskell-from-anything.so
   main-is:
     Test1.hs
   build-depends:
-      base >= 4 && <= 5
-    , call-haskell-from-anything
-    , bytestring >= 0.9.2.1
-    , msgpack >= 0.7.1.5
-    , blaze-builder >= 0.3.1.0
-    , template-haskell
-    , mtl >= 2.1.2
-    , attoparsec >= 0.10.3.0
+      call-haskell-from-anything
+
+    -- Packages that already have version bounds in the library:
+    , base
+    , bytestring
+    , msgpack
+    , mtl
   ghc-options:
   -- For building TemplateHaskell with cabal and -dynamic, we have to disable -dynamic sometimes
     -no-hs-main -fPIC -shared -dynamic
