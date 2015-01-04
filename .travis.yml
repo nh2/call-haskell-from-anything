@@ -7,7 +7,10 @@ ghc:
 before_install:
   - sudo apt-get install msgpack-python
 
+install:
+  - cabal install --only-dependencies --enable-tests --enable-shared
+
 script:
-  # Travis default from http://docs.travis-ci.com/user/languages/haskell/
-  - cabal configure --enable-tests && cabal build
+  - cabal configure --enable-tests --enable-shared
+  - cabal build
   - python test.py
