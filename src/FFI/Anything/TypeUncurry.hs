@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -cpp #-}
+{-# LANGUAGE CPP #-}
 
 #if MIN_VERSION_base(4,6,0)
 #define USE_DATA_KINDS 1

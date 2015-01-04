@@ -1,4 +1,5 @@
-{-# OPTIONS_GHC -cpp -fno-warn-orphans #-}
+{-# LANGUAGE CPP #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 #if MIN_VERSION_base(4,6,0)
 #define USE_DATA_KINDS 1
