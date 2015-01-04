@@ -64,6 +64,25 @@ executable call-haskell-from-anything.so
   ghc-options:
     -- For building TemplateHaskell with cabal and -dynamic, we have to disable -dynamic sometimes
     -no-hs-main -fPIC -shared -dynamic
-  --  -no-hs-main
-  -- TODO remove hardcoded path somehow
-  ld-options: -shared /usr/lib/ghc/libHSrts-ghc7.6.3.so
+
+  -- When using a GHC who'se libHSrts-ghc*.*.*.so is not in LIBRARY_PATH, run
+  --`cabal configure` with the
+  -- `--extra-lib-dirs=/path/to/ghc/lib/ghc-*-*-*/rts-1.0/` flag.
+
+  -- If we don't specify the Haskell RTS as extra-libraries, we get errors like
+  -- the following when calling from some other language:
+  --   /usr/lib/ghc/ghc-prim-0.3.0.0/libHSghc-prim-0.3.0.0-ghc7.6.3.so: undefined symbol: stg_forkOnzh
+  --
+  -- Not sure yet how to best get rid of enumerating all GHC versions here...
+
+  if impl(ghc == 7.6.3)
+    extra-libraries: HSrts-ghc7.6.3
+
+  if impl(ghc == 7.8.2)
+    extra-libraries: HSrts-ghc7.8.2
+
+  if impl(ghc == 7.8.3)
+    extra-libraries: HSrts-ghc7.8.3
+
+  if impl(ghc == 7.8.4)
+    extra-libraries: HSrts-ghc7.8.4
