@@ -6,9 +6,23 @@ ghc:
 
 before_install:
   - sudo apt-get install msgpack-python
+  - |
+    if [[ `ghc --numeric-version` == 7.8* ]] && [[ `cabal --numeric-version` == 1.18* ]]; then
+      echo "Installing newer cabal to get the --allow-newer option"
+      cabal install cabal-install
+    fi
 
 install:
-  - cabal install --only-dependencies --enable-tests --enable-shared
+  # The `msgpack` package's dependency bounds haven't been updated
+  # for GHC > 7.6 as of writing, so use `--allow-newer` on the
+  # problematic dependencies it specifies.
+  - export PATH=$HOME/.cabal/bin:$PATH
+  - |
+    if [[ `ghc --numeric-version` == 7.6* ]]; then
+      cabal install --only-dependencies --enable-tests --enable-shared
+    else
+      cabal install --only-dependencies --enable-tests --enable-shared --allow-newer=text,attoparsec,template-haskell
+    fi
 
 script:
   - cabal configure --enable-tests --enable-shared
