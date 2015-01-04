@@ -13,6 +13,9 @@ before_install:
     fi
 
 install:
+  # TravisCI currently uses Ubuntu 12.04 which doesn't have a ruby-msgpack package.
+  - gem install ffi msgpack
+
   # The `msgpack` package's dependency bounds haven't been updated
   # for GHC > 7.6 as of writing, so use `--allow-newer` on the
   # problematic dependencies it specifies.
@@ -28,3 +31,4 @@ script:
   - cabal configure --enable-tests --enable-shared
   - cabal build
   - python test.py
+  - ruby test.rb
