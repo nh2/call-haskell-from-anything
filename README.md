@@ -163,6 +163,16 @@ Because it is simple, available (there are implementations for most programming 
 However, *call-haskell-from-anything* is not fixed to use only MsgPack as wire-format; anything that can conveniently encode lists/arrays is suitable (`FFI.Anything.TypeUncurry.Msgpack` is the only implementation so far, though).
 
 
+### I cant get the dependencies to install with GHC >= 7.8
+
+The `msgpack` package's dependency bounds haven't been updated for 7.8 as of writing.
+Try installing the dependencies with
+
+```bash
+cabal install --only-dependencies --enable-shared -j8 --allow-newer=text,attoparsec,template-haskell
+```
+
+
 ### How fast are serialized FFI calls? What is the trade-off compared to a C style FFI?
 
 Calls from one programming language into another are usually slower than calls inside the programming language, so it does make sense to check if a foreign call is worth it.
