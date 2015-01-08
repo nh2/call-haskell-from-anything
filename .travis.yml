@@ -30,6 +30,6 @@ install:
 
 script:
   - cabal configure --enable-tests --enable-shared
-  - cabal build
+  - cabal build -v2
   - python test.py
   - ruby test.rb
