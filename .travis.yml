@@ -31,5 +31,5 @@ install:
 script:
   - cabal configure --enable-tests --enable-shared
   - cabal build
-  - python test.py
-  - ruby test.rb
+  - LD_LIBRARY_PATH=dist/build python test.py
+  - LD_LIBRARY_PATH=dist/build ruby test.rb
