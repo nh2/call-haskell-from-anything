@@ -10,7 +10,7 @@ before_install:
   - |
     if [[ `ghc --numeric-version` == 7.8* ]] && [[ `cabal --numeric-version` == 1.18* ]]; then
       echo "Installing newer cabal to get the --allow-newer option"
-      cabal install cabal-install "--constraint=cabal-install<1.22"
+      cabal install cabal-install
     fi
 
 install:
@@ -31,5 +31,9 @@ install:
 script:
   - cabal configure --enable-tests --enable-shared
   - cabal build
+
+  # Cabal 1.22 puts the library .so files into dist/build.
+  # In older cabals, it "magically" worked, see:
+  #   https://github.com/haskell/cabal/issues/2330#issuecomment-69201669
   - LD_LIBRARY_PATH=dist/build python test.py
   - LD_LIBRARY_PATH=dist/build ruby test.rb
