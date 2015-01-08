@@ -7,13 +7,13 @@ category:      Network
 -- We use Configure to determine the `extra-libraries: HSrts-ghc*.*.*` field.
 -- See the ./configure script.
 build-type:    Configure
-License:       MIT
+license:       MIT
 synopsis:      Python-to-Haskell function calls
 stability:     experimental
-tested-With:   GHC==7.4.2
+tested-with:   GHC==7.6.3, GHC==7.8.2
 cabal-version: >= 1.10
 homepage:      https://github.com/nh2/call-haskell-from-anything
-bug-Reports:   https://github.com/nh2/call-haskell-from-anything/issues
+bug-reports:   https://github.com/nh2/call-haskell-from-anything/issues
 
 
 extra-source-files:
