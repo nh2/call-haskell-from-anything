@@ -3,6 +3,7 @@ language: haskell
 ghc:
   - 7.8
   - 7.6
+  - 7.4
 
 before_install:
   - sudo apt-get install msgpack-python
@@ -21,7 +22,7 @@ install:
   # problematic dependencies it specifies.
   - export PATH=$HOME/.cabal/bin:$PATH
   - |
-    if [[ `ghc --numeric-version` == 7.6* ]]; then
+    if [[ `ghc --numeric-version` == 7.4* ]] || [[ `ghc --numeric-version` == 7.6* ]]; then
       cabal install --only-dependencies --enable-tests --enable-shared
     else
       cabal install --only-dependencies --enable-tests --enable-shared --allow-newer=text,attoparsec,template-haskell
