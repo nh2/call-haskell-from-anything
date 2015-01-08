@@ -10,7 +10,7 @@ before_install:
   - |
     if [[ `ghc --numeric-version` == 7.8* ]] && [[ `cabal --numeric-version` == 1.18* ]]; then
       echo "Installing newer cabal to get the --allow-newer option"
-      cabal install cabal-install
+      cabal install cabal-install "--constraint=cabal-install<1.22"
     fi
 
 install:
