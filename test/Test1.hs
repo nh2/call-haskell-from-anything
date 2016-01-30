@@ -6,7 +6,6 @@ module Test1 where
 import           Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
-import           Data.Monoid
 import qualified Data.MessagePack as MSG
 import           Control.Monad.Identity
 
