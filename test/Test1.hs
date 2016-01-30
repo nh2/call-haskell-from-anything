@@ -24,11 +24,11 @@ f1 i f = "Called with params: " ++ show i ++ ", " ++ show f
 
 -- To be translated to:
 f1' :: ByteString -> ByteString
-f1' bs = mconcat . BSL.toChunks $ MSG.pack (uncurry f1 $ msg)
+f1' bs = BSL.toStrict $ MSG.pack (uncurry f1 $ msg)
   where
-    msg = case MSG.tryUnpack bs of
-      Left e  -> error $ "tryUnpack: " ++ e
-      Right r -> r
+    msg = case MSG.unpack (BSL.fromStrict bs) of
+      Nothing -> error "could not unpack"
+      Just r -> r
 
 
 -- TODO check who deallocs - it seems to work magically!

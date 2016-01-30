@@ -3,9 +3,21 @@
 require 'ffi'
 require 'msgpack'
 
+# For finding where the built .so file is, independent on whether it was built with stack or cabal
+require 'find'
+def find_file_ending_with(ending_with_str, path='.')
+  Find.find('.') do |path|
+    if path.end_with? ending_with_str
+      return path
+    end
+  end
+  abort("Could not find " + ending_with_str + " in " + path)
+end
+
+
 module Test1
   extend FFI::Library
-  ffi_lib './dist/build/call-haskell-from-anything.so/call-haskell-from-anything.so'
+  ffi_lib find_file_ending_with('build/call-haskell-from-anything.so/call-haskell-from-anything.so')
 
   attach_function :f1_t_export, [:string], :string
   attach_function :fib_export, [:int], :int

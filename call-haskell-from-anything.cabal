@@ -1,5 +1,5 @@
 name:          call-haskell-from-anything
-version:       0.1.0.2
+version:       0.2.0.0
 license:       MIT
 author:        Niklas Hambüchen (mail@nh2.me)
 maintainer:    Niklas Hambüchen (mail@nh2.me)
@@ -10,7 +10,7 @@ build-type:    Configure
 license:       MIT
 synopsis:      Python-to-Haskell function calls
 stability:     experimental
-tested-with:   GHC==7.6.3, GHC==7.8.2
+tested-with:   GHC==7.10.3
 cabal-version: >= 1.10
 homepage:      https://github.com/nh2/call-haskell-from-anything
 bug-reports:   https://github.com/nh2/call-haskell-from-anything/issues
@@ -32,23 +32,17 @@ library
     src
   exposed-modules:
     FFI.Anything.TH
-    FFI.Anything.Copied
     FFI.Anything.TypeUncurry
     FFI.Anything.TypeUncurry.ReturnResult
-    FFI.Anything.TypeUncurry.Legacy
     FFI.Anything.TypeUncurry.Msgpack
-  if impl(ghc >= 7.6.0)
-    exposed-modules:
-      FFI.Anything.TypeUncurry.DataKinds
-  other-modules:
-    FFI.Anything.Util
+    FFI.Anything.TypeUncurry.DataKinds
   build-depends:
-      base >= 4 && < 5
+      base >= 4.8 && < 5
     , bytestring >= 0.10.0.0
-    , msgpack >= 0.7.1.5 && < 1.0.0
+    , msgpack >= 1.0.0
     , template-haskell
     , mtl >= 2.1.2
-    , attoparsec >= 0.10.3.0
+    , vector
   ghc-options:
     -Wall -fwarn-unused-imports
 

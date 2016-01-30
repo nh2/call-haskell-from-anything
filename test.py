@@ -1,7 +1,18 @@
 from ctypes import *
 import msgpack
 
-lib = cdll.LoadLibrary("dist/build/call-haskell-from-anything.so/call-haskell-from-anything.so")
+# For finding where the built .so file is, independent on whether it was built with stack or cabal
+import os, sys
+def find_file_ending_with(ending_with_str, path='.'):
+    for root, dirs, files in os.walk(path):
+        for candidate_path in [os.path.join(root, f) for f in files]:
+            if candidate_path.endswith(ending_with_str):
+                return candidate_path
+    raise Exception("Could not find " + ending_with_str + " in " + path)
+so_file_path = find_file_ending_with('build/call-haskell-from-anything.so/call-haskell-from-anything.so')
+
+
+lib = cdll.LoadLibrary(so_file_path)
 
 lib.hs_init(0, 0)
 

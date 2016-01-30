@@ -117,30 +117,13 @@ A full example
 You can run the stock example in this repository:
 
 ```bash
-sudo apt-get install python-msgpack  # or equivalent for your system
-# Important: All used libraries have to be installed with --enable-shared,
-# so better use a cabal sandbox:
-cabal sandbox init
-cabal install --only-dependencies --enable-shared -j8
-cabal configure --enable-shared
+sudo apt-get install python-msgpack ruby-msgpack  # or equivalent for your system
+stack build
 
-# If the above doesn't work, you may have to adjust name of the shared
-# library for the Haskell RTS `libHSrts-ghc*.*.*.so` in the
-# `detect-ghc-buildinfo` file, depending on how the .so file is called
-# in your OS.
-# If it is just in a different location, pass
-#   --extra-lib-dirs=/path/to/ghc/lib/ghc-*.*.*/rts-1.0/
-# to `cabal configure`.
-
-cabal build
-python test.py  # If this works, you're all fine!
+# If any of these work, you're all fine!
+python test.py
+ruby test.rb
 ```
-
-**TODO**: Detail some of the code here.
-
-* Show needed imports and language extensions, link to example file.
-* Link to example Python/Ruby/C code loading the dynamic library.
-
 
 FAQ
 ---
@@ -164,16 +147,6 @@ This means you cannot pass around pointers or callback functions; you have to us
 Because it is simple, available (there are implementations for most programming languages, and writing new ones is easy due to its simplicity), supports dumb binary (passing around arbitrary custom data does not require to think about encoding), and fast (in many implementations).
 
 However, *call-haskell-from-anything* is not fixed to use only MsgPack as wire-format; anything that can conveniently encode lists/arrays is suitable (`FFI.Anything.TypeUncurry.Msgpack` is the only implementation so far, though).
-
-
-### I cant get the dependencies to install with GHC >= 7.8
-
-The `msgpack` package's dependency bounds haven't been updated for 7.8 as of writing.
-Try installing the dependencies with
-
-```bash
-cabal install --only-dependencies --enable-shared -j8 --allow-newer=text,attoparsec,template-haskell
-```
 
 
 ### How fast are serialized FFI calls? What is the trade-off compared to a C style FFI?

@@ -1,32 +1,15 @@
 language: haskell
 
 ghc:
-  - 7.8
-  - 7.6
-  - 7.4
+  - 7.10
 
 before_install:
   - sudo apt-get install msgpack-python
-  - |
-    if [[ `ghc --numeric-version` == 7.8* ]] && [[ `cabal --numeric-version` == 1.18* ]]; then
-      echo "Installing newer cabal to get the --allow-newer option"
-      cabal install cabal-install
-    fi
 
 install:
   # TravisCI currently uses Ubuntu 12.04 which doesn't have a ruby-msgpack package.
   - gem install ffi msgpack
-
-  # The `msgpack` package's dependency bounds haven't been updated
-  # for GHC > 7.6 as of writing, so use `--allow-newer` on the
-  # problematic dependencies it specifies.
-  - export PATH=$HOME/.cabal/bin:$PATH
-  - |
-    if [[ `ghc --numeric-version` == 7.4* ]] || [[ `ghc --numeric-version` == 7.6* ]]; then
-      cabal install --only-dependencies --enable-tests --enable-shared
-    else
-      cabal install --only-dependencies --enable-tests --enable-shared --allow-newer=text,attoparsec,template-haskell
-    fi
+  - cabal install --only-dependencies --enable-tests --enable-shared
 
 script:
   - cabal configure --enable-tests --enable-shared
