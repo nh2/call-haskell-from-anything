@@ -12,28 +12,10 @@
 -- like tuples/lists, but de-serializing *fuction arguments* is not that simple.
 --
 -- Using this module, you can write an instance how to unpack the 'TypeList' type,
--- and then use 'translateCall' to make any function take such a single 'TypeList'
+-- and then use 'translate' to make any function take such a single 'TypeList'
 -- instead of multiple function arguments.
---
--- There is currently a technical limitation:
--- The result type must be wrapped in the 'Identity' monad.
---
--- Example:
---
--- >-- Assume your library provides some unpack function, e.g. it allows you to write:
--- >unpack someBytestring :: (Int, String, Double)
--- >
--- >-- and you have a function
--- >f :: Int -> String -> Double -> Identity Char
--- >
--- >-- then you can use:
--- >f' :: (Int, String, Double) -> Identity Char
--- >f' = translateCall f
--- >
--- >result = f' (unpack someBytestring)
 module FFI.Anything.TypeUncurry.DataKinds where
 
-import           Control.Monad.Identity
 import           Data.Proxy
 
 
@@ -73,18 +55,15 @@ infixr :::
 -}
 
 -- | Arguments to a function, e.g. @[String, Int]@ for @String -> Int -> r@.
-type family Param f :: [*]
--- | For pure functions, we need an 'Identity' monad wrapper here to not conflict with @a -> f@.
-type instance Param (Identity r) = '[]
-type instance Param (IO r) = '[]
-type instance Param (a -> f) = a ': Param f
+type family Param f :: [*] where
+  Param (a -> f) = a ': Param f
+  Param r = '[]
 
 -- | The result of a function, e.g. @r@ for @String -> Int -> r@.
-type family Result f :: *
--- | For pure functions, we need an 'Identity' monad wrapper here to not conflict with @a -> f@.
-type instance Result (Identity r) = r
-type instance Result (IO r) = IO r
-type instance Result (a -> f) = Result f
+type family Result f :: * where
+  Result (IO r) = IO r
+  Result (a -> f) = Result f
+  Result r = r
 
 
 -- | Function f can be translated to 'TypeList' l with result type r.
@@ -95,25 +74,28 @@ class (Param f ~ l, Result f ~ r) => ToTypeList f l r where
   -- Example: @t1 -> ... -> tn -> r@ becomes @TypeList [t1, ..., tn] -> r@.
   translate :: f -> TypeList l -> r
 
--- | Recursive case: A function of type @a -> ... -> r@
--- can be translated to @TypeList [a, ...] -> r@.
-instance ToTypeList (Identity r) '[] r where
-  translate (Identity r) Nil = r
 
--- | Base case: A "pure" function without arguments (just @Identity r@)
+-- | Base case: A "pure" function without arguments
 -- can be translated to @TypeList Nil -> r@.
 instance (ToTypeList f l r) => ToTypeList (a -> f) (a ': l) r where
   translate f (a ::: l) = translate (f a) l
 
--- | Base case: An IO function without arguments (just @Identity r@)
+-- | Base case: An IO function without arguments (just @IO r@)
 -- can be translated to @TypeList Nil -> r@.
 instance ToTypeList (IO r) '[] (IO r) where
   translate ior Nil = ior
 
+-- | Base case: A value @r@ can be translated to @TypeList Nil -> r@.
+instance (Param f ~ '[], Result f ~ r, f ~ r) => ToTypeList f '[] r where
+  -- Could also be written as
+  --   (Param r ~ '[], Result r ~ r) => ToTypeList r '[] r
+  -- but I find the other way clearer.
+  translate r Nil = r
+
 
 -- Now an example:
 --
--- someFunction :: Int -> Double -> Identity String
+-- someFunction :: Int -> Double -> String
 -- someFunction _i _d = return "asdf"
 --
 -- exampleAutoTranslate = translate someFunction

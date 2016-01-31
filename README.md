@@ -68,7 +68,7 @@ Add this:
 
 ```haskell
 foreign export ccall chooseMax_export :: CString -> IO CString
-chooseMax_export = export . returnId2 $ chooseMax
+chooseMax_export = export chooseMax
 ```
 
 and compile it into a shared library (`.so` or `.dll`).
@@ -95,8 +95,6 @@ f' :: (a, b, ...) -> r
 ```
 
 so that the function *input* (arguments) can be easily de-serialized.
-
-The only restriction for pure functions is that they must be lifted to return a result in the `Identity` monad; the convenience functions `returnId2`, `returnId3` and so on do this for you.
 
 The `wrap_into_msgpack` function used above sets the return type of the foreign function to raw bytes and wraps arguments and return value into MessagePack:
 

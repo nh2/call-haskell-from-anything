@@ -1,5 +1,5 @@
 name:          call-haskell-from-anything
-version:       0.2.0.0
+version:       1.0.0.0
 license:       MIT
 author:        Niklas Hambüchen (mail@nh2.me)
 maintainer:    Niklas Hambüchen (mail@nh2.me)
@@ -34,7 +34,6 @@ library
   exposed-modules:
     FFI.Anything.TH
     FFI.Anything.TypeUncurry
-    FFI.Anything.TypeUncurry.ReturnResult
     FFI.Anything.TypeUncurry.Msgpack
     FFI.Anything.TypeUncurry.DataKinds
   build-depends:

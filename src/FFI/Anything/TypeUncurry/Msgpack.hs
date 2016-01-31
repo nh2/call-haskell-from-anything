@@ -27,7 +27,6 @@ module FFI.Anything.TypeUncurry.Msgpack (
 , byteStringToCStringFunIO
 , export
 , exportIO
-, module FFI.Anything.TypeUncurry.ReturnResult
 ) where
 
 import           Data.ByteString (ByteString)
@@ -39,8 +38,6 @@ import           Data.Proxy
 import           Data.Vector (Vector)
 import qualified Data.Vector as V
 import           Foreign.C
-
-import FFI.Anything.TypeUncurry.ReturnResult
 
 import FFI.Anything.TypeUncurry
 
@@ -80,7 +77,7 @@ errorMsg :: String -> String
 errorMsg locationStr = "call-haskell-from-anything: " ++ locationStr ++ ": got wrong number of function arguments or non-array"
 
 
--- | Translates a function of type @a -> b -> ... -> Identity r@ to
+-- | Translates a function of type @a -> b -> ... -> r@ to
 -- a function that:
 --
 -- * takes as a single argument a 'ByteString' containing all arguments serialized in a MessagePack array
@@ -140,7 +137,7 @@ byteStringToCStringFunIO f cs = do
   return res_cs
 
 
--- | Exports a "pure" function (usually it has to be wrapped in the Identity monad)
+-- | Exports a "pure" function
 -- to an FFI function that takes its arguments as a serialized MessagePack message.
 --
 -- Calling this function throws an 'error' if the de-serialization of the arguments fails!

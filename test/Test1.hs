@@ -7,7 +7,6 @@ import           Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.MessagePack as MSG
-import           Control.Monad.Identity
 
 import Foreign.C
 
@@ -40,17 +39,8 @@ f1_hs cs = do
     return res_cs
 
 
-f1_identity :: Int -> Double -> Identity String
-f1_identity a b = return $ f1 a b
-
-
--- Only works in GHC 7.6
--- f1_t :: CString -> IO CString
--- f1_t :: ByteString -> ByteString
--- f1_t = translateCall f1_identity
-
 f1_t :: ByteString -> ByteString
-f1_t = uncurryMsgpack f1_identity
+f1_t = uncurryMsgpack f1
 
 foreign export ccall f1_t_export :: CString -> IO CString
 f1_t_export :: CString -> IO CString
@@ -72,7 +62,7 @@ fib_print x = putStrLn ("fib_print: " ++ show f) >> return f
 
 foreign export ccall fib_export :: CString -> IO CString
 fib_export :: CString -> IO CString
-fib_export = export . returnId2 $ fib
+fib_export = export fib
 
 
 -- TODO the sole *presence* of this function seems to make the calls in Python slower
