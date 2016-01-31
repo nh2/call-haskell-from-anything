@@ -34,6 +34,7 @@
 module FFI.Anything.TypeUncurry.DataKinds where
 
 import           Control.Monad.Identity
+import           Data.Proxy
 
 
 -- * Type-level lists (containing types)
@@ -122,24 +123,17 @@ instance ToTypeList (IO r) '[] (IO r) where
 
 -- * Length of type-level lists
 
--- | A proxy type that can contain an arbitrary type.
---
--- Needed for some type-level computations, like 'paramLength'.
-data Proxy k = Proxy
-
-
 -- | Allows to calculate the length of a 'TypeList', at compile time.
 --
 -- We need to use a 'Proxy' for this.
 class ParamLength (l :: [*]) where
   -- | Calculates the length of a type list, put into a proxy. Usage:
   --
-  -- >paramLength (undefined :: Proxy l)
+  -- >paramLength (Proxy :: Proxy l)
   paramLength :: Proxy l -> Int
 
 instance ParamLength '[] where
   paramLength _ = 0
 
 instance (ParamLength l) => ParamLength (a ': l) where
-  paramLength _ = succ $ paramLength (undefined :: Proxy l)
-
+  paramLength _ = succ $ paramLength (Proxy :: Proxy l)

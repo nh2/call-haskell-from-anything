@@ -35,6 +35,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import           Data.Maybe (fromMaybe)
 import qualified Data.MessagePack as MSG
+import           Data.Proxy
 import           Data.Vector (Vector)
 import qualified Data.Vector as V
 import           Foreign.C
