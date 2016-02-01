@@ -1,5 +1,9 @@
 # call-haskell-from-anything changelog
 
+## 1.0.1.0 -- 2015-02-01
+
+* Remove no-longer-needed instance for IO, fixes "overlapping instances" error in clients
+
 ## 1.0.0.0 -- 2015-01-31
 
 * Use closed type families to remove need for `Identity` monad at the end of functions.

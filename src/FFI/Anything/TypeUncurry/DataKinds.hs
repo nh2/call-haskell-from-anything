@@ -61,7 +61,6 @@ type family Param f :: [*] where
 
 -- | The result of a function, e.g. @r@ for @String -> Int -> r@.
 type family Result f :: * where
-  Result (IO r) = IO r
   Result (a -> f) = Result f
   Result r = r
 
@@ -79,11 +78,6 @@ class (Param f ~ l, Result f ~ r) => ToTypeList f l r where
 -- can be translated to @TypeList Nil -> r@.
 instance (ToTypeList f l r) => ToTypeList (a -> f) (a ': l) r where
   translate f (a ::: l) = translate (f a) l
-
--- | Base case: An IO function without arguments (just @IO r@)
--- can be translated to @TypeList Nil -> r@.
-instance ToTypeList (IO r) '[] (IO r) where
-  translate ior Nil = ior
 
 -- | Base case: A value @r@ can be translated to @TypeList Nil -> r@.
 instance (Param f ~ '[], Result f ~ r, f ~ r) => ToTypeList f '[] r where
