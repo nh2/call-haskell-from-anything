@@ -1,4 +1,5 @@
 from ctypes import *
+import struct
 import msgpack
 
 # For finding where the built .so file is, independent on whether it was built with stack or cabal
@@ -12,28 +13,38 @@ def find_file_ending_with(ending_with_str, path='.'):
 so_file_path = find_file_ending_with('build/call-haskell-from-anything.so/call-haskell-from-anything.so')
 
 
+free = cdll.LoadLibrary("libc.so.6").free
 lib = cdll.LoadLibrary(so_file_path)
 
 lib.hs_init(0, 0)
 
 # Set function return type to string
 fun = lib.f1_t_export
-fun.restype = c_char_p
+fun.restype = POINTER(c_char)
 
 # Call function
 msg = msgpack.packb([1, 2.23])
-resmsg = fun(msg)
-res = msgpack.unpackb(resmsg)
+length_64bits = struct.pack(">q", len(msg)) # big-endian
+ptr = fun(length_64bits + msg)
+data_length = struct.unpack(">q", ptr[:8])[0]
+res = msgpack.unpackb(ptr[8:8+data_length])
+free(ptr)
 
 print "Haskell said:", res
 
 
 # Some shortcuts
 def make_msgpack_fun(fun):
-    fun.restype = c_char_p
+    fun.restype = POINTER(c_char)
 
     def f(*args):
-        return msgpack.unpackb(fun(msgpack.packb(args)))
+        packed = msgpack.packb(args)
+        length_64bits = struct.pack(">q", len(packed)) # big-endian
+        ptr = fun(length_64bits + packed)
+        data_length = struct.unpack(">q", ptr[:8])[0]
+        res = msgpack.unpackb(ptr[8:8+data_length])
+        free(ptr)
+        return res
 
     return f
 

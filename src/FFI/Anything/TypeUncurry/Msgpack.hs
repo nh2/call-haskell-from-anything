@@ -32,10 +32,16 @@ module FFI.Anything.TypeUncurry.Msgpack (
 import           Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
+import           Data.ByteString.Unsafe (unsafeUseAsCStringLen)
+import           Data.Int (Int64)
 import           Data.Maybe (fromMaybe)
 import qualified Data.MessagePack as MSG
 import           Data.Proxy
+import           Data.Storable.Endian (peekBE, pokeBE)
 import           Foreign.C
+import           Foreign.Marshal.Alloc (mallocBytes)
+import           Foreign.Marshal.Utils (copyBytes)
+import           Foreign.Ptr (castPtr, plusPtr)
 
 import FFI.Anything.TypeUncurry
 
@@ -112,6 +118,17 @@ tryUncurryMsgpackIO f = \bs -> case MSG.unpack $ BSL.fromStrict bs of
   Just args -> Just $ BSL.toStrict . MSG.pack <$> (translate f $ args)
 
 
+-- | O(n). Makes a copy of the ByteString's contents into a malloc()ed area.
+-- You need to free() the returned string when you're done with it.
+byteStringToMallocedCStringWith64bitLength :: ByteString -> IO CString
+byteStringToMallocedCStringWith64bitLength bs =
+  unsafeUseAsCStringLen bs $ \(ptr, len) -> do
+    targetPtr <- mallocBytes (8 + len)
+    pokeBE (castPtr targetPtr) (fromIntegral len :: Int64)
+    copyBytes (targetPtr `plusPtr` 8) ptr len
+    return targetPtr
+
+
 -- * Exporting
 
 -- TODO implement via byteStringToCStringFunIO?
@@ -119,9 +136,10 @@ tryUncurryMsgpackIO f = \bs -> case MSG.unpack $ BSL.fromStrict bs of
 -- for use in the FFI.
 byteStringToCStringFun :: (ByteString -> ByteString) -> CString -> IO CString
 byteStringToCStringFun f cs = do
-  cs_bs <- BS.packCString cs
+  msgLength :: Int64 <- peekBE (castPtr cs)
+  cs_bs <- BS.packCStringLen (cs `plusPtr` 8, fromIntegral msgLength)
   let res_bs = f cs_bs
-  res_cs <- BS.useAsCString res_bs return
+  res_cs <- byteStringToMallocedCStringWith64bitLength res_bs
   return res_cs
 
 
@@ -129,9 +147,10 @@ byteStringToCStringFun f cs = do
 -- for use in the FFI.
 byteStringToCStringFunIO :: (ByteString -> IO ByteString) -> CString -> IO CString
 byteStringToCStringFunIO f cs = do
-  cs_bs <- BS.packCString cs
+  msgLength :: Int64 <- peekBE (castPtr cs)
+  cs_bs <- BS.packCStringLen (cs `plusPtr` 8, fromIntegral msgLength)
   res_bs <- f cs_bs
-  res_cs <- BS.useAsCString res_bs return
+  res_cs <- byteStringToMallocedCStringWith64bitLength res_bs
   return res_cs
 
 

@@ -96,14 +96,20 @@ f' :: (a, b, ...) -> r
 
 so that the function *input* (arguments) can be easily de-serialized.
 
-The `wrap_into_msgpack` function used above sets the return type of the foreign function to raw bytes and wraps arguments and return value into MessagePack:
+The `wrap_into_msgpack` function used above sets the return type of the foreign function to raw bytes and wraps arguments and return value into MessagePack, prepended by a 64-bit length:
 
 ```python
 def wrap_into_msgpack(foreign_fun):
     foreign_fun.restype = c_char_p
 
     def wrapped_fun(*args):
-        return msgpack.unpackb(foreign_fun(msgpack.packb(args)))
+        packed = msgpack.packb(args)
+        length_64bits = struct.pack("q", len(packed)) # native-endian
+        ptr = fun(length_64bits + packed)
+        data_length = cast(ptr[:8], POINTER(c_longlong))[0]
+        res = msgpack.unpackb(ptr[8:8+data_length])
+        free(ptr)
+        return res
 
     return wrapped_fun
 ```

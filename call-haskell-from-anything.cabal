@@ -40,6 +40,7 @@ library
       base >= 4.8 && < 5
     , bytestring >= 0.10.0.0
     , data-msgpack >= 0.0.10
+    , storable-endian >= 0.2.6
     , template-haskell >= 2.11.0
     , mtl >= 2.1.2
   ghc-options:
