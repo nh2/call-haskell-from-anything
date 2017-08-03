@@ -11,7 +11,7 @@ license:       MIT
 synopsis:      Call Haskell functions from other languages via serialization and dynamic libraries
 description:   FFI via serialisation. See https://github.com/nh2/call-haskell-from-anything for details.
 stability:     experimental
-tested-with:   GHC==7.10.3
+tested-with:   GHC==8.0.2
 cabal-version: >= 1.10
 homepage:      https://github.com/nh2/call-haskell-from-anything
 bug-reports:   https://github.com/nh2/call-haskell-from-anything/issues
@@ -39,10 +39,9 @@ library
   build-depends:
       base >= 4.8 && < 5
     , bytestring >= 0.10.0.0
-    , msgpack >= 1.0.0
-    , template-haskell
+    , data-msgpack >= 0.0.10
+    , template-haskell >= 2.11.0
     , mtl >= 2.1.2
-    , vector
   ghc-options:
     -Wall -fwarn-unused-imports
 
@@ -59,7 +58,7 @@ executable call-haskell-from-anything.so
     -- Packages that already have version bounds in the library:
     , base
     , bytestring
-    , msgpack
+    , data-msgpack
     , mtl
   ghc-options:
     -- For building TemplateHaskell with cabal and -dynamic, we have to disable -dynamic sometimes

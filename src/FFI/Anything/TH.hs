@@ -32,7 +32,7 @@ deriveCallable :: Name -> String -> Q [Dec]
 deriveCallable funName exportedName = do
   info <- reify funName
   case info of
-    VarI name typ _mDec _fixity -> do
+    VarI name typ _mDec -> do
       let _nameString   = nameBase name
           signatureList = parameters typ
           paramTypes    = init signatureList

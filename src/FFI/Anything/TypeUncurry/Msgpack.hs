@@ -35,8 +35,6 @@ import qualified Data.ByteString.Lazy as BSL
 import           Data.Maybe (fromMaybe)
 import qualified Data.MessagePack as MSG
 import           Data.Proxy
-import           Data.Vector (Vector)
-import qualified Data.Vector as V
 import           Foreign.C
 
 import FFI.Anything.TypeUncurry
@@ -47,23 +45,23 @@ import FFI.Anything.TypeUncurry
 -- We need this because we have to call 'parseArray' at the top-level
 -- 'MSG.MessagePack' instance, but not at each function argument step.
 class MessagePackRec l where
-  fromObjectRec :: Vector MSG.Object -> Maybe (TypeList l)
+  fromObjectRec :: (Monad m) => [MSG.Object] -> m (TypeList l)
 
 -- | When no more types need to be unpacked, we are done.
 instance MessagePackRec '[] where
-  fromObjectRec v | V.null v = Just Nil
-  fromObjectRec _            = Nothing
+  fromObjectRec v | null v = pure Nil
+  fromObjectRec _          = fail "fromObjectRec: passed object is not expected []"
 
 -- | Unpack one type by just parsing the next element.
 instance (MSG.MessagePack a, MessagePackRec l) => MessagePackRec (a ': l) where
-  fromObjectRec v | not (V.null v) = (:::) <$> MSG.fromObject (V.head v) <*> fromObjectRec (V.tail v)
-  fromObjectRec _                  = Nothing
+  fromObjectRec (x:xs) = (:::) <$> MSG.fromObject x <*> fromObjectRec xs
+  fromObjectRec _      = fail "fromObjectRec: passed object is not expected (x:xs)"
 
 -- | Parses a tuple of arbitrary size ('TypeList's) from a MessagePack array.
-getTypeListFromMsgpackArray :: forall l . (MessagePackRec l, ParamLength l) => MSG.Object -> Maybe (TypeList l)
+getTypeListFromMsgpackArray :: forall m l . (MessagePackRec l, ParamLength l, Monad m) => MSG.Object -> m (TypeList l)
 getTypeListFromMsgpackArray obj = case obj of
-    MSG.ObjectArray v | V.length v == len -> fromObjectRec v
-    _                                     -> Nothing
+    MSG.ObjectArray v | length v == len -> fromObjectRec v
+    _                                   -> fail "getTypeListFromMsgpackArray: wrong object length"
   where
     len = paramLength (Proxy :: Proxy l)
 

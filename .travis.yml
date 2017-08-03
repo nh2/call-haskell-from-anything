@@ -1,7 +1,7 @@
 language: haskell
 
 ghc:
-  - 7.10
+  - 8.0
 
 before_install:
   - sudo apt-get install msgpack-python
