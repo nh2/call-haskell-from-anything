@@ -1,5 +1,11 @@
 # call-haskell-from-anything changelog
 
+## 1.1.0.0 -- 2017-08-03
+
+* Backwards incompatible change! Wrappers have to be updated (see examples)
+* Fixed significant memory truncation bug #20
+* Fixed potential use-after-free stack return bug (see fix for #20)
+
 ## 1.0.1.0 -- 2015-02-01
 
 * Remove no-longer-needed instance for IO, fixes "overlapping instances" error in clients
