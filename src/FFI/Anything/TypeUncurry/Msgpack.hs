@@ -131,16 +131,10 @@ byteStringToMallocedCStringWith64bitLength bs =
 
 -- * Exporting
 
--- TODO implement via byteStringToCStringFunIO?
 -- | Transforms a 'ByteString'-mapping function to 'CString'-mapping function
 -- for use in the FFI.
 byteStringToCStringFun :: (ByteString -> ByteString) -> CString -> IO CString
-byteStringToCStringFun f cs = do
-  msgLength :: Int64 <- peekBE (castPtr cs)
-  cs_bs <- BS.packCStringLen (cs `plusPtr` 8, fromIntegral msgLength)
-  let res_bs = f cs_bs
-  res_cs <- byteStringToMallocedCStringWith64bitLength res_bs
-  return res_cs
+byteStringToCStringFun f cs = byteStringToCStringFunIO (return . f) cs
 
 
 -- | Transforms a 'ByteString'-mapping 'IO' function to 'CString'-mapping function
