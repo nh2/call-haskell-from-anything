@@ -14,9 +14,9 @@ args, _unknown = parser.parse_known_args()  # ignore unknown arguments from caba
 ghc_binary = args.with_compiler
 
 
-print "Determining GHC version:",
+print("Determining GHC version:")
 ghc_version = subprocess.check_output([ghc_binary, "--numeric-version"]).strip()
-print ghc_version
+print(ghc_version)
 
 
 with open("call-haskell-from-anything.buildinfo", "w") as f:
