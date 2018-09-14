@@ -18,8 +18,8 @@ bug-reports:   https://github.com/nh2/call-haskell-from-anything/issues
 
 
 extra-source-files:
-  configure
-  detect-ghc-buildinfo.py
+    configure
+  , detect-ghc-buildinfo.py
 
 
 source-repository head
