@@ -10,7 +10,7 @@ def find_file_ending_with(ending_with_str, path='.'):
             if candidate_path.endswith(ending_with_str):
                 return candidate_path
     raise Exception("Could not find " + ending_with_str + " in " + path)
-so_file_path = find_file_ending_with('build/call-haskell-from-anything.so/call-haskell-from-anything.so')
+so_file_path = find_file_ending_with('call-haskell-from-anything/libcall-haskell-from-anything.so')
 
 
 free = cdll.LoadLibrary("libc.so.6").free
