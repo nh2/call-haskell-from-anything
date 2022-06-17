@@ -7,7 +7,6 @@ category:      Network
 -- We use Configure to determine the `extra-libraries: HSrts-ghc*.*.*` field.
 -- See the ./configure script.
 build-type:    Configure
-license:       MIT
 synopsis:      Call Haskell functions from other languages via serialization and dynamic libraries
 description:   FFI via serialisation. See https://github.com/nh2/call-haskell-from-anything for details.
 stability:     experimental
