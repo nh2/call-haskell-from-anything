@@ -2,6 +2,7 @@
 
 {-# LANGUAGE DataKinds, TypeOperators #-}
 {-# LANGUAGE TypeOperators, ScopedTypeVariables, FlexibleContexts #-}
+{-# LANGUAGE MonoLocalBinds #-}
 
 -- | Easy FFI via MessagePack.
 --
@@ -51,7 +52,7 @@ import FFI.Anything.TypeUncurry
 -- We need this because we have to call 'parseArray' at the top-level
 -- 'MSG.MessagePack' instance, but not at each function argument step.
 class MessagePackRec l where
-  fromObjectRec :: (Monad m) => [MSG.Object] -> m (TypeList l)
+  fromObjectRec :: (MonadFail m) => [MSG.Object] -> m (TypeList l)
 
 -- | When no more types need to be unpacked, we are done.
 instance MessagePackRec '[] where
@@ -64,7 +65,7 @@ instance (MSG.MessagePack a, MessagePackRec l) => MessagePackRec (a ': l) where
   fromObjectRec _      = fail "fromObjectRec: passed object is not expected (x:xs)"
 
 -- | Parses a tuple of arbitrary size ('TypeList's) from a MessagePack array.
-getTypeListFromMsgpackArray :: forall m l . (MessagePackRec l, ParamLength l, Monad m) => MSG.Object -> m (TypeList l)
+getTypeListFromMsgpackArray :: forall m l . (MessagePackRec l, ParamLength l, MonadFail m) => MSG.Object -> m (TypeList l)
 getTypeListFromMsgpackArray obj = case obj of
     MSG.ObjectArray v | length v == len -> fromObjectRec v
     _                                   -> fail "getTypeListFromMsgpackArray: wrong object length"

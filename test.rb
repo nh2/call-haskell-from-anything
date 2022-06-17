@@ -21,7 +21,7 @@ module Test1
 
   attach_function :free, [:pointer], :void
 
-  ffi_lib find_file_ending_with('build/call-haskell-from-anything.so/call-haskell-from-anything.so')
+  ffi_lib find_file_ending_with('call-haskell-from-anything.so')
 
   attach_function :f1_t_export, [:pointer], :pointer
   attach_function :fib_export, [:pointer], :pointer
